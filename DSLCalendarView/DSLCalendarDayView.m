@@ -108,13 +108,33 @@
 
 - (void)drawBackground {
     if (self.selectionState == DSLCalendarDayViewNotSelected) {
-        if (self.isInCurrentMonth) {
-            [[UIColor colorWithWhite:245.0/255.0 alpha:1.0] setFill];
-        }
-        else {
-            [[UIColor colorWithWhite:225.0/255.0 alpha:1.0] setFill];
-        }
-        UIRectFill(self.bounds);
+        
+		NSUInteger flags = NSYearCalendarUnit | NSMonthCalendarUnit | NSDayCalendarUnit;
+		NSCalendar *calendar = [NSCalendar currentCalendar];
+        
+		NSDateComponents *components = [calendar components:flags fromDate:[self.day date]];
+		NSDateComponents *componentsOfToday = [calendar components:flags fromDate:[NSDate date]];
+        
+		NSDate *date = [calendar dateFromComponents:components];
+		NSDate *dateToday = [calendar dateFromComponents:componentsOfToday];
+        
+		if (self.isInCurrentMonth) {
+			if ([date isEqualToDate:dateToday]) {
+				[[UIColor lightGrayColor] setFill]; //from now current day is colored
+			}
+			else {
+				[[UIColor colorWithWhite:245.0 / 255.0 alpha:1.0] setFill];
+			}
+		}
+		else {
+			if ([date isEqualToDate:dateToday]) {
+				[[UIColor lightGrayColor] setFill]; //even if it is not current month, current day is colored
+			}
+			else {
+				[[UIColor colorWithWhite:225.0 / 255.0 alpha:1.0] setFill];
+			}
+		}
+		UIRectFill(self.bounds);
     }
     else {
         switch (self.selectionState) {
